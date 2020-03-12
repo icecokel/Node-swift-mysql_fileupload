@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="Gallery.js"></script>
+    <style>
+        #title{
+            width: 500px;
+
+        }
+    </style>
+
+    <script>
+        $(function(){
+            $($("button")[0]).click(function(){
+                // 동기 방식 업로드
+                regist();
+                
+            })
+            $($("button")[1]).click(function(){
+                registAsync();
+                
+            })
+            getlist()
+        })
+        function regist(){
+            var form = document.querySelector("form");
+            form.action = "/regist";//url
+            form.method = "post";
+            form.encoding = "multipart/form-data";
+            form.submit();
+        } 
+
+        function registAsync(){
+        //비동기 업로드 코드 작성
+        var formData = new FormData();
+
+        //파라미터 추가하기
+        formData.append("title",$("#title").val());
+        formData.append("myFile",$("input[name='myFile']")[0].files[0]);
+
+        $.ajax({
+            url:"/regist",
+            processData:false,
+            contentType:false,
+            type:"post",
+            data:formData,
+            success:function(result){
+                //콜백함수에서 목록 호출
+                getlist();
+            }
+        });
+    }
+
+
+    function getlist(){
+        document.getElementById("content").innerText=""
+        $.ajax({
+            url:"/list",
+            type:"get",
+            success : function(result){
+               for(var i = 0 ; i < result.list.length ; i++){
+                var json = result.list[i];
+
+                var content = document.getElementById("content")
+
+                var gallery = new Gallery(content,"./data/"+json.filename , json.title
+                )
+
+               }
+            }
+        });
+    }
+    </script>
+</head>
+<body>
+    <div style="background : lightblue;">
+        <h2>Upload Form</h2>
+    <form>
+        <input type="text" id="title" name="title" placeholder="제목"/>
+        <br>
+        <input type="file" name="myFile" />
+
+    </form>
+
+    <button type="button" >동기</button>
+    <button type="button" >비동기</button>
+</div>
+    <div>
+        <h2> Show Files</h2>
+        <div id="content">
+            File List
+
+        </div>
+    </div>
+
+</body>
+
+</html>

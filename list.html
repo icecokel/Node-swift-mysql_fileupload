@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<script>
+    $(function(){
+        getlist()
+    })
+    function getlist(){
+        $.ajax({
+            url:"/list",
+            type:"get",
+            success : function(result){
+               
+                var tag = "";
+                tag += "<table width=\"80%\" border=\"1px\">";
+                tag += "<tr>";
+                tag += "<td width=\"5%\">No</td>";
+                tag += "<td width=\"15%\">사진</td>";
+                tag += "<td width=\"60%\">제목</td>";
+                tag += "<td width=\"20%\">등록일</td>";
+                tag += "</tr>";
+
+                var total = result.list.length
+                console.log(total)
+
+                // 원래는 객체화 시켜야 하지만 피곤하므로 문자열로 진행.
+                for(var data in result.list){
+                    console.log(data)
+
+                    tag += "<tr>";
+                    tag += "<td>"+(total--)+"</td>";
+                    tag += "<td><img width=\"30px\" src=\"/data/"+result.list[data].filename+"\"></td>";
+                    tag += "<td>"+result.list[data].title+"</td>";
+                    tag += "<td>"+result.list[data].regdate.substring(0,10)+"</td>";
+                    tag += "</tr>";
+                }
+                tag += "</table>";
+                //body에 적기
+                document.querySelector("#content").innerHTML = tag;
+            }
+        });
+    }
+</script>
+<body>
+    <div id ="content">
+    </div>
+    <button type="botton" onClick="location.href='/client.html'">글쓰기</button>
+
+
+</body>
+</html>
